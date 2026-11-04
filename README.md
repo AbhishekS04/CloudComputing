@@ -6,16 +6,16 @@ The screenshots show the setup of Ubuntu virtual machines in Oracle
 VirtualBox, configuration of a shared NAT network, connectivity validation
 between guests, and Mininet topology creation.
 
-The material is organized chronologically into four lab days:
+The material is organized chronologically into five lab days:
 
 - **Day 1:** Create and boot an Ubuntu virtual machine.
 - **Day 2:** Clone/configure virtual machines and verify guest-to-guest networking.
 - **Day 3:** Create common Mininet network topologies.
 - **Day 4:** Build an SDN lab using Mininet, Open vSwitch, and the Ryu controller.
+- **Day 5:** Simulate VM and cloudlet scheduling with CloudSim Plus.
 
-> This is an image-based record. There are no scripts or source files in the
-> repository; the commands and settings below are transcribed from the
-> screenshots.
+> Days 1–4 are image-based records, while Day 5 also includes the Java
+> simulation source and Maven project configuration.
 
 ## Contents
 
@@ -26,6 +26,7 @@ The material is organized chronologically into four lab days:
 - [Day 2: VM Networking](#day-2-vm-networking)
 - [Day 3: Mininet Topologies](#day-3-mininet-topologies)
 - [Day 4: Software-Defined Networking](#day-4-software-defined-networking)
+- [Day 5: CloudSim Plus Scheduling](#day-5-cloudsim-plus-scheduling)
 - [Networking Concepts Demonstrated](#networking-concepts-demonstrated)
 - [Reproducing the Lab](#reproducing-the-lab)
 - [Important Notes](#important-notes)
@@ -82,6 +83,12 @@ copying that filename literally.
 │   ├── reversed.png
 │   ├── single.png
 │   └── tree.png
+├── day-4/
+│   ├── day-4_README.md
+│   └── 1.png ... 18.png
+├── day-5/
+│   ├── README.md
+│   └── 1.0.png ... 12.png
 └── README.md
 ```
 
@@ -315,6 +322,28 @@ index, and notes about command variations are documented in
 
 ![Day 4 SDN practical screenshots](day-4/README.md)
 
+## Day 5: CloudSim Plus Scheduling
+
+Day 5 moves from network emulation to cloud-computing simulation. The Java
+practical uses CloudSim Plus to model one datacenter, two virtual machines,
+and four cloudlets. It runs four combinations of VM and cloudlet schedulers:
+space-shared and time-shared policies at both levels.
+
+The detailed model, commands, scheduling comparison, and screenshot index are
+documented in [day-5/README.md](day-5/README.md).
+
+### Day 5 outcomes
+
+- Configured a Java 17 Maven project with CloudSim Plus 8.5.5.
+- Created a datacenter with one host and four processing elements.
+- Created two VMs and four cloudlets.
+- Compared VM space-shared and time-shared schedulers.
+- Compared cloudlet space-shared and time-shared schedulers.
+- Printed cloudlet status, VM assignment, start time, and finish time for each
+  scenario.
+
+![Day 5 CloudSim Plus practical screenshots](day-5/README.md)
+
 ## Networking Concepts Demonstrated
 
 ### Virtual machines
@@ -462,3 +491,14 @@ source ~/ryu-env/bin/activate
 ryu-manager --ofp-tcp-listen-port 6653 ryu.app.simple_switch_13
 ```
 
+### Day 5 CloudSim Plus
+
+See the complete setup and execution instructions in
+[day-5/README.md](day-5/README.md). The experiment can be compiled from the
+repository root with:
+
+```bash
+mvn compile
+```
+
+The main class is `lab.SchedulingExperiment`.
