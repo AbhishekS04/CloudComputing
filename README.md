@@ -6,11 +6,12 @@ The screenshots show the setup of Ubuntu virtual machines in Oracle
 VirtualBox, configuration of a shared NAT network, connectivity validation
 between guests, and Mininet topology creation.
 
-The material is organized chronologically into three lab days:
+The material is organized chronologically into four lab days:
 
 - **Day 1:** Create and boot an Ubuntu virtual machine.
 - **Day 2:** Clone/configure virtual machines and verify guest-to-guest networking.
 - **Day 3:** Create common Mininet network topologies.
+- **Day 4:** Build an SDN lab using Mininet, Open vSwitch, and the Ryu controller.
 
 > This is an image-based record. There are no scripts or source files in the
 > repository; the commands and settings below are transcribed from the
@@ -24,6 +25,7 @@ The material is organized chronologically into three lab days:
 - [Day 1: Ubuntu VM Creation](#day-1-ubuntu-vm-creation)
 - [Day 2: VM Networking](#day-2-vm-networking)
 - [Day 3: Mininet Topologies](#day-3-mininet-topologies)
+- [Day 4: Software-Defined Networking](#day-4-software-defined-networking)
 - [Networking Concepts Demonstrated](#networking-concepts-demonstrated)
 - [Reproducing the Lab](#reproducing-the-lab)
 - [Important Notes](#important-notes)
@@ -40,6 +42,9 @@ By the end of the recorded exercises, the lab demonstrates:
 6. Connecting guests to the same VirtualBox NAT Network.
 7. Confirming communication with `ping` and observing zero packet loss.
 8. Creating linear, reversed, tree, and single-switch Mininet topologies.
+9. Installing and verifying Open vSwitch and the Ryu SDN controller.
+10. Creating a three-host, single-switch Mininet topology controlled remotely by Ryu.
+11. Inspecting OpenFlow 1.3 flow entries and demonstrating traffic filtering with a DROP rule.
 
 ## Tools and Environment
 
@@ -283,6 +288,33 @@ networks.
 
 ![Mininet single-switch topology](day-3/single.png)
 
+## Day 4: Software-Defined Networking
+
+Day 4 extends the Mininet work from Day 3 into a controller-based SDN
+environment. The lab uses Mininet to create virtual hosts and links, Open
+vSwitch as the software switch, and Ryu as the remote OpenFlow controller.
+The topology contains three hosts connected to one switch, and the practical
+demonstrates connectivity, flow inspection, and packet filtering.
+
+The detailed command-by-command procedure, expected results, screenshot
+index, and notes about command variations are documented in
+[day-4/README.md](day-4/README.md).
+
+### Day 4 outcomes
+
+- Updated Ubuntu and installed Mininet and Open vSwitch.
+- Verified the Open vSwitch service.
+- Created a Python virtual environment and installed Ryu.
+- Started `simple_switch_13` on OpenFlow TCP port `6653`.
+- Created a three-host topology with a remote controller at `127.0.0.1:6653`.
+- Checked nodes, links, and host connectivity.
+- Inspected OpenFlow 1.3 rules.
+- Added a DROP rule for traffic entering switch port 1 and verified the loss of
+  connectivity from H1.
+- Removed flow entries and cleaned up Mininet.
+
+![Day 4 SDN practical screenshots](day-4/README.md)
+
 ## Networking Concepts Demonstrated
 
 ### Virtual machines
@@ -317,6 +349,15 @@ performance benchmark.
 Mininet creates lightweight software-defined networks using hosts, switches,
 links, and optionally controllers. The `links` command is a quick validation
 step because it exposes the interfaces and connection state for every link.
+
+### Software-defined networking and OpenFlow
+
+SDN separates the control logic from packet forwarding. In this lab, Ryu is
+the controller and Open vSwitch is the forwarding switch. The switch connects
+to Ryu using OpenFlow 1.3 over TCP port `6653`. The Ryu
+`simple_switch_13` application learns host MAC addresses and installs
+forwarding entries. An OpenFlow DROP entry can selectively block traffic
+matching a switch port.
 
 ## Reproducing the Lab
 
@@ -403,3 +444,21 @@ listed here for quick navigation:
 - [day-3/reversed.png](day-3/reversed.png)
 - [day-3/tree.png](day-3/tree.png)
 - [day-3/single.png](day-3/single.png)
+
+### Day 4 SDN setup
+
+Follow the detailed instructions in [day-4/README.md](day-4/README.md).
+The key topology command uses an explicit controller address and OpenFlow
+version so that the Mininet switch connects to the intended Ryu listener:
+
+```bash
+sudo mn --topo single,3 --controller=remote,ip=127.0.0.1,port=6653 --switch ovsk,protocols=OpenFlow13
+```
+
+Start Ryu in a separate terminal before creating the topology:
+
+```bash
+source ~/ryu-env/bin/activate
+ryu-manager --ofp-tcp-listen-port 6653 ryu.app.simple_switch_13
+```
+
