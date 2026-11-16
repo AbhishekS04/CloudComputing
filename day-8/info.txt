@@ -1,0 +1,1 @@
+instade of gcp i use aws bcz there are some problem while setting up the GCP account thats the main reason i use the aws and lucky it worked so everything is working not terminating any processs which are running as for now keeping the links live so it will be easy to understand for everyone
